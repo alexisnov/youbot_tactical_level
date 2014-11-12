@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package>
+  <name>youbot_tactical_level</name>
+  <version>0.1.0</version>
+  <description>
+
+     youbot_tactical_level
+
+  </description>
+  <maintainer email="user3@gmail.com">user3</maintainer>
+  <author>user3</author>
+  <license>BSD</license>
+  <!-- <url type="bugtracker">https://github.com/stonier/qt_ros/issues</url> -->
+  <!-- <url type="repository">https://github.com/stonier/qt_ros</url> -->
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <run_depend>roscpp</run_depend>
+
+  <build_depend>opencv2</build_depend>
+  <run_depend>opencv2</run_depend>
+ 
+</package>

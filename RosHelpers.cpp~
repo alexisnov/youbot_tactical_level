@@ -1,0 +1,35 @@
+//ROS helper functoins (implementation)
+//Authors: S. Diane, ...
+//Created: 20.10.2014
+
+
+#include "RosHelpers.h"
+
+#include <ros/ros.h>
+#include <geometry_msgs/Twist.h>
+
+ros::Publisher control_publisher;
+const std::string topic_name="cmd_vel";
+
+
+void InitRos(int argc, char **argv)
+{
+ros::init(argc, argv, "youbot_tactical_level");
+    ros::start(); // explicitly needed since our nodehandle is going out of scope.
+    ros::NodeHandle n;
+
+    //Ros communications:
+    control_publisher = n.advertise<geometry_msgs::Twist>(topic_name, 1000);	
+
+}
+void SendControl(float fwd, float left, float rotLeft)
+{
+    geometry_msgs::Twist msg;
+    msg.linear.x=fwd;
+    msg.linear.y=left;
+    msg.angular.z=rotLeft;
+    control_publisher.publish(msg);
+
+    //std::cout <<"fwd/left/rotLeft: "<<fwd<<"; "<<left<<"; "<<rotLeft;
+
+}

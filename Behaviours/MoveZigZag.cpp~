@@ -1,0 +1,36 @@
+//Youbot behaviour for zig-zag motion
+//Authors: A. Novoselskiy, ...
+//Created: 22.10.2014
+
+#include "includes.h"
+
+void MoveZigZag::Execute(float dt)
+{	
+time+=dt;
+
+char str[100];
+sprintf(str, "MoveZigZag, time=%.1f", time);
+rh->SendInfo(str);
+
+
+float t=time%60;
+
+float x=0.1;
+if(time<5)
+rh->SendControl(x,0, 0); // up
+else if(time<15)
+rh->SendControl(0,x, 0); // half-right
+else if(time<20)
+rh->SendControl(x,0, 0);//up
+else if(time<40)
+rh->SendControl(0,-x, 0); //left
+else if(time<45)
+rh->SendControl(x,0, 0); // half-right
+else if(time<50)
+rh->SendControl(x,0, 0); // up
+else
+rh->SendControl(0,x, 0); // half-right
+
+//rh->SendControl(0.5, 2*sin(time/10), 0);
+
+}

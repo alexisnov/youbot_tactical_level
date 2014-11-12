@@ -1,0 +1,64 @@
+//ROS helper functoins (implementation)
+//Authors: S. Diane, ...
+//Created: 21.10.2014
+
+#include "includes.h"
+
+RosHelper::RosHelper(int argc, char **argv)
+{
+topic_control="/cmd_vel";
+topic_info="/tactical_info";
+topic_behaviour="/cmd_behaviour";
+
+
+   ros::init(argc, argv, "youbot_tactical_level");
+    ros::start(); // explicitly needed since our nodehandle is going out of scope.
+    ros::NodeHandle n;
+
+    //Ros communications:
+    control_publisher = n.advertise<geometry_msgs::Twist>(topic_control, 1000);	
+    info_publisher = n.advertise<std_msgs::String>(topic_info, 1000);	
+
+}
+
+void RosHelper::InitCallbacks()
+{
+  ros::NodeHandle n;
+    behaviour_subscriber = n.subscribe(topic_behaviour, 1000, tbc);	
+}
+
+RosHelper::~RosHelper()
+{
+   if(ros::isStarted()) {
+      ros::shutdown(); // explicitly needed since we use ros::start();
+      ros::waitForShutdown();
+    }
+    wait();
+}
+
+
+void RosHelper::SendControl(float fwd, float left, float rotLeft)
+{
+    geometry_msgs::Twist msg;
+    msg.linear.x=fwd;
+    msg.linear.y=left;
+    msg.angular.z=rotLeft;
+    control_publisher.publish(msg);
+
+    //std::cout <<"fwd/left/rotLeft: "<<fwd<<"; "<<left<<"; "<<rotLeft<<endl;
+
+}
+
+void RosHelper::SendInfo(char* info)
+{
+    std_msgs::String msg;
+std::stringstream ss;
+ ss << info;
+  msg.data = ss.str();
+
+   
+    info_publisher.publish(msg);
+
+}
+
+

@@ -1,0 +1,12 @@
+//Youbot behaviour for motion towards point {x, y}, avoiding obstacles with laser scanner
+//Authors: S. Diane, ...
+//Created: 21.10.2014
+
+
+class MoveWithLaser:IBehaviour {
+public:
+    override void Execute(float dt)
+	{
+		
+	}
+};

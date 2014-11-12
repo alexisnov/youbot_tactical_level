@@ -1,0 +1,10 @@
+//Youbot behaviour interface
+//Authors: S. Diane, ...
+//Created: 21.10.2014
+
+
+class IBehaviour {
+public:
+    virtual ~IBase() {}; // destructor, use it to call destructor of the inherit classes
+    virtual void Execute(float dt) = 0; // pure virtual method
+};
