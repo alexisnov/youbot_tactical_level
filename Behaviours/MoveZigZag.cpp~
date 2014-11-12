@@ -4,6 +4,14 @@
 
 #include "includes.h"
 
+float modf(float a, float b)
+{
+	while(a>b) a-=b;
+        return a;
+}
+
+
+
 void MoveZigZag::Execute(float dt)
 {	
 time+=dt;
@@ -11,26 +19,48 @@ time+=dt;
 char str[100];
 sprintf(str, "MoveZigZag, time=%.1f", time);
 rh->SendInfo(str);
+//Set Manipulator in front position looking down
+rh->SetManipulator(3.0,2.2,-2.0,3.3,3.0);
+printf("Set Manipulator start position\n");
+rh->SetGripper(2.0);
+//start motion
 
+float t=modf(time,60);
+if (!rh->cube_found){
+	float x=0.1;
+	if(time<5)
+	rh->SendControl(x,0, 0); // up
+	else if(time<15)
+	rh->SendControl(0,x, 0); // half-right
+	else if(time<20)
+	rh->SendControl(x,0, 0);//up
+	else if(time<40)
+	rh->SendControl(0,-x, 0); //left
+	else if(time<45)
+	rh->SendControl(x,0, 0); // half-right
+	else if(time<50)
+	rh->SendControl(x,0, 0); // up
+	else
+	rh->SendControl(0,x, 0); // half-right
 
-float t=time%60;
+	if(detect_time!=0){
+		detect_time=0;
+	}
+}else{
+	if(detect_time==0){
+		detect_time=time;
+	}
+	float dt = time-detect_time;
+	rh->SendControl(0,0,0);//Stop
+	rh->SetManipulator(3.0,2.2,-2.0,3.3,3.0);
+	if(dt>5){
+	rh->SetGripper(0);//Close
+	}
+	if(dt>10)
+	{
+		rh->SetManipulator(3.0,2.2,-2.0,3.3,3.0);
+	}
+}   
 
-float x=0.1;
-if(time<5)
-rh->SendControl(x,0, 0); // up
-else if(time<15)
-rh->SendControl(0,x, 0); // half-right
-else if(time<20)
-rh->SendControl(x,0, 0);//up
-else if(time<40)
-rh->SendControl(0,-x, 0); //left
-else if(time<45)
-rh->SendControl(x,0, 0); // half-right
-else if(time<50)
-rh->SendControl(x,0, 0); // up
-else
-rh->SendControl(0,x, 0); // half-right
-
-//rh->SendControl(0.5, 2*sin(time/10), 0);
-
+    ros::spin();
 }

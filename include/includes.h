@@ -12,6 +12,12 @@
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 #include <std_msgs/String.h>
+#include <std_msgs/Float32MultiArray.h>
+#include <brics_actuator/JointPositions.h>
+#include <geometry_msgs/Pose.h>
+#include <tf/transform_datatypes.h>
+#include <nav_msgs/Odometry.h>
+#include <opencv2/opencv.hpp>
 
 #include "RosHelper.h"
 #include "HokuyoLaser.h"

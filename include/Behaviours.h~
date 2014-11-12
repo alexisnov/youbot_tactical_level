@@ -17,21 +17,19 @@ virtual void Init(RosHelper* rh_){rh=rh_; time=0;}
 
 //Youbot behaviour for motion towards point {x, y}, avoiding obstacles with laser scanner
 class MoveWithLaser:public Behaviour {
-
-public:  
+public:
+HokuyoLaser* hl;
+~MoveWithLaser(){if(hl!=NULL) delete hl;}
     void Execute(float dt);
+void Init(RosHelper* rh_);
 };
 
 //Youbot behaviour for zig-zag motion
 class MoveZigZag:public Behaviour {
 
-public:
-HokuyoLaser* hl;
-~MoveZigZag(){if(hl!=NULL) delete hl;}
-
 public:  
+    float detect_time;//Time of cube detection
     void Execute(float dt);
-void Init(RosHelper* rh_);
 };
 
 

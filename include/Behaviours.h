@@ -8,10 +8,11 @@ class Behaviour {
 public:
 RosHelper* rh;
 float time;
+ int pointN;
 
     virtual ~Behaviour() {} // destructor, use it to call destructor of the inherit classes
     virtual void Execute(float dt){}
-virtual void Init(RosHelper* rh_){rh=rh_; time=0;}
+    virtual void Init(RosHelper* rh_){rh=rh_; time=0;pointN=0;}
 };
 
 
@@ -28,6 +29,7 @@ void Init(RosHelper* rh_);
 class MoveZigZag:public Behaviour {
 
 public:  
+    float detect_time;//Time of cube detection
     void Execute(float dt);
 };
 

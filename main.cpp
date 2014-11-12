@@ -22,7 +22,7 @@ delete b;
 	switch(mode)
 	{
 	    case 0: b=new MoveWithLaser(); std::cout <<"MoveWithLaser"<< std::endl; break;
-	   case 1: b=new MoveZigZag(); std::cout <<"MoveZigZag"<< std::endl; break;
+	   case 1: b=new MoveZigZag(); std::cout <<"MoveZigZag"<< std::endl;   break;
 	    case 2: b=new MoveSpin(); std::cout <<"MoveSpin"<< std::endl; break;
 	    case 3: b=new MoveStop(); std::cout <<"MoveStop"<< std::endl; break;
 	    default: b=NULL; std::cout <<"Wrong mode"<< std::endl; break;

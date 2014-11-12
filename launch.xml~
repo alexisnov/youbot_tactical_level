@@ -1,3 +1,0 @@
-<launch>
-  <node name="youbot_tactical_level" pkg="youbot_tactical_level" type="youbot_tactical_level" />
-</launch>
