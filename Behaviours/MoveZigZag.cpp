@@ -4,13 +4,35 @@
 
 #include "includes.h"
 #define sign(x) (x<0)?-1:1
+#define abs(x) x*sign(x)
 float modf(float a, float b)
 {
 	while(a>b) a-=b;
         return a;
 }
 
+void goXY(float x, float y){
+ float v=1;
+ float dx = x-rh->robotX;
+ float dy = y-rh->robotY;
+ float vx,vy,vtheta=0;
+ /*float dr = sqrt(pow(dx,2)+pow(dy,2));
+ float dtheta = atan2(dy,dx)-rh->theta;
+ 
+ if(dtheta>0.001) {
+   vx = (sqrt(pow(dr,2))>v)?sign(dr)*v:v*dr;
+ }
+ float vy = (dy>v)?sign(dy)*v:v*dy;
+ 
+ float vtheta = (sqrt(pow(dtheta,2))>0.005)?sign(dtheta)*v:v*dtheta;
+ //printf("dx %f, dy %f\r\n",dx,dy);
+ printf("vx %f, dr %f\r\n",vx,dr);
+ printf("dtheta %f, vtheta %f\r\n",dtheta,vtheta);*/
+ if(abs(dx)<0.01){ vx=v;}else{vx=0;}
+ if(bs(dy)<0.01){ vy=v;}else{vy=0;}
+ rh->SendControl(vx,vy,vtheta);
 
+}
 
 void MoveZigZag::Execute(float dt)
 {	
@@ -24,24 +46,9 @@ rh->SetManipulator(3.0,2.2,-2.0,3.3,3.0);
 //printf("Set Manipulator start position\n");
 rh->SetGripper(2.0);
 //start motion
-
+goXY(rh->path.at(pointN).x,rh->path.at(pointN).y);
 //float t=modf(time,60);
- float x=1;
- float dx = rh->path.at(pointN).x-rh->robotX;
- float dy = rh->path.at(pointN).y-rh->robotY;
- float dr = sqrt(pow(dx,2)+pow(dy,2));
- float dtheta = atan2(dy,dx)-rh->theta;
- float vx=0;
- if(dtheta>0.001) {
-   vx = (sqrt(pow(dr,2))>x)?sign(dr)*x:x*dr;
- }
- float vy = (dy>x)?sign(dy)*x:x*dy;
- 
- float vtheta = (sqrt(pow(dtheta,2))>0.005)?sign(dtheta)*x:x*dtheta;
- //printf("dx %f, dy %f\r\n",dx,dy);
- printf("vx %f, dr %f\r\n",vx,dr);
- printf("dtheta %f, vtheta %f\r\n",dtheta,vtheta);
- rh->SendControl(vx,0,vtheta);
+
  if(dr<=0.001)
    {
     pointN++;
