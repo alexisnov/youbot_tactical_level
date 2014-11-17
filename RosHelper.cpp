@@ -11,8 +11,8 @@ RosHelper::RosHelper(int argc, char **argv)
 topic_control="/cmd_vel";
 topic_info="/tactical_info";
 topic_behaviour="/cmd_behaviour";
-topic_manipulator="/arm_controller/position_command";
-topic_gripper="/gripper_controller/position_command";
+topic_manipulator="/arm_1/arm_controller/position_command";
+topic_gripper="/arm_2/gripper_controller/position_command";
 topic_objects="objects";
 topic_odom = "/odom";
 
@@ -31,14 +31,16 @@ gripperJointPositions.resize(2);
     cube_found=false;
     //Horizontal and vertical step of snake
     double dy = 1.0;
-    double dx = 0.5;
-    int periodN = 2;
+    double dx = 1.0;
+	//path.push_back(cv::Point2f(dx,0));
+	//path.push_back(cv::Point2f(dx,dy));
+    int periodN = 1;
     for (int i=0;i<periodN;i++){
-      path.push_back(cv::Point2f(-dx,dy*i));
-      path.push_back(cv::Point2f(-dx,dy*(i+1)));
+      path.push_back(cv::Point2f(dx,dy*i));
+      path.push_back(cv::Point2f(dx,dy*(i+1)));
       path.push_back(cv::Point2f(0,dy*(i+1)));
       path.push_back(cv::Point2f(0,2*dy*(i+1)));      
-    }    
+    }   
 }
 
 void RosHelper::InitCallbacks()
