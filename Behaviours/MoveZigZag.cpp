@@ -25,6 +25,23 @@ rh->SendInfo(str);
 //printf("Set Manipulator start position\n");
 rh->SetGripper(2.0);
 //start motion
+/*
+ double HectorPathFollower::headingDiff(double x, double y, double pt_x, double pt_y, double heading)
+  {
+double v1_x = x - pt_x;
+    double v1_y = y - pt_y;
+    double v2_x = cos(heading);
+    double v2_y = sin(heading);
+
+    double perp_dot = v1_x * v2_y - v1_y * v2_x;
+    double dot = v1_x * v2_x + v1_y * v2_y;
+
+    //get the signed angle
+    double vector_angle = atan2(perp_dot, dot);
+
+    return -1.0 * vector_angle;
+	}
+*/
 float v=0.5;
  float dx = rh->path.at(pointN).x-rh->robotX;
  float dy = rh->path.at(pointN).y-rh->robotY;
