@@ -9,7 +9,7 @@ public:
 RosHelper* rh;
 float time;
  int pointN;
-
+ std::vector<cv::Point2f> path;//path of robot
     virtual ~Behaviour() {} // destructor, use it to call destructor of the inherit classes
     virtual void Execute(float dt){}
     virtual void Init(RosHelper* rh_){rh=rh_; time=0;pointN=0;}
@@ -19,8 +19,6 @@ float time;
 //Youbot behaviour for motion towards point {x, y}, avoiding obstacles with laser scanner
 class MoveWithLaser:public Behaviour {
 public:
-HokuyoLaser* hl;
-~MoveWithLaser(){if(hl!=NULL) delete hl;}
     void Execute(float dt);
 void Init(RosHelper* rh_);
 };
