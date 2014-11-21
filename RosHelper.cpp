@@ -30,8 +30,23 @@ gripperJointPositions.resize(2);
     manipulator_publisher = n.advertise<brics_actuator::JointPositions>(topic_manipulator, 1000);
     gripper_publisher =  n.advertise<brics_actuator::JointPositions>(topic_gripper, 1000);   
     cube_found=false;
+<<<<<<< HEAD
     
 	cntLaser=cntOdom=0;
+=======
+    //Horizontal and vertical step of snake
+    double dy = 1.0;
+    double dx = 1.0;
+	//path.push_back(cv::Point2f(dx,0));
+	//path.push_back(cv::Point2f(dx,dy));
+    int periodN = 1;
+    for (int i=0;i<periodN;i++){
+      path.push_back(cv::Point2f(dx,dy*i));
+      path.push_back(cv::Point2f(dx,dy*(i+1)));
+      path.push_back(cv::Point2f(0,dy*(i+1)));
+      path.push_back(cv::Point2f(0,2*dy*(i+1)));      
+    }   
+>>>>>>> 4c993a2bd9bba1eead76131c781dbf51ce1c9bcb
 }
 float RosHelper::movePoint(cv::Point2f &target)
 {//Движение к точке
