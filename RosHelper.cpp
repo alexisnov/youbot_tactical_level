@@ -30,8 +30,28 @@ gripperJointPositions.resize(2);
     manipulator_publisher = n.advertise<brics_actuator::JointPositions>(topic_manipulator, 1000);
     gripper_publisher =  n.advertise<brics_actuator::JointPositions>(topic_gripper, 1000);   
     cube_found=false;
+<<<<<<< HEAD
     
 	cntLaser=cntOdom=0;
+=======
+<<<<<<< HEAD
+    
+	cntLaser=cntOdom=0;
+=======
+    //Horizontal and vertical step of snake
+    double dy = 1.0;
+    double dx = 1.0;
+	//path.push_back(cv::Point2f(dx,0));
+	//path.push_back(cv::Point2f(dx,dy));
+    int periodN = 1;
+    for (int i=0;i<periodN;i++){
+      path.push_back(cv::Point2f(dx,dy*i));
+      path.push_back(cv::Point2f(dx,dy*(i+1)));
+      path.push_back(cv::Point2f(0,dy*(i+1)));
+      path.push_back(cv::Point2f(0,2*dy*(i+1)));      
+    }   
+>>>>>>> 4c993a2bd9bba1eead76131c781dbf51ce1c9bcb
+>>>>>>> origin/master
 }
 float RosHelper::movePoint(cv::Point2f &target)
 {//Движение к точке
@@ -159,6 +179,7 @@ void RosHelper::objectsDetectedCallback(const std_msgs::Float32MultiArray::Const
     }
     
 }
+<<<<<<< HEAD
 float RosHelper::get_laserscan_integral_value(const sensor_msgs::LaserScan::ConstPtr& msg)
 {
 	 float brR=0, brL=0;
@@ -170,6 +191,21 @@ float RosHelper::get_laserscan_integral_value(const sensor_msgs::LaserScan::Cons
 		float x=msg->ranges[i];
 		
 		if(!(msg->range_min <= msg->ranges[i] && msg->ranges[i] <= msg->range_max)) x=msg->range_max; //Inf, NaN
+=======
+float RosHelper::get_laserscan_integral_value(std::vector<float> ranges)
+{
+	 float brR=0, brL=0;
+		float m=ranges.size()/2.0;
+
+		int cnt=0;
+		for(int i=0;i<ranges.size();i++)
+		{
+		float x=ranges[i];
+		
+		if(x<10) continue;
+		
+		if(x>10000) x=10000;
+>>>>>>> origin/master
 		
 		float br=1/x; //brightness
 
@@ -190,7 +226,10 @@ void RosHelper::LaserScanCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
   /*
   if(cntLaser==2){
   std::stringstream ss;
+<<<<<<< HEAD
   ss.precision(3);
+=======
+>>>>>>> origin/master
   ss << ".l#";
   //msg->ranges - Массив Float32 (в Vector`e)
   for(int i=0;i<msg->ranges.size();i++){
@@ -203,6 +242,7 @@ void RosHelper::LaserScanCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
   }
   */
  
+<<<<<<< HEAD
 float rot=get_laserscan_integral_value(msg);
 hokuyoRanges=msg->ranges;
  char str[20];
@@ -210,6 +250,18 @@ hokuyoRanges=msg->ranges;
 SendInfo(str);
 
  //  SendInfo("hi");
+=======
+if(cntLaser==2){
+float rot=get_laserscan_integral_value(msg->ranges);
+hokuyoRanges=msg->ranges;
+ char str[100];
+  sprintf(str, ".laser_mini#%f",  rot);
+SendInfo(str);
+
+  cntLaser=0;
+  }
+  SendInfo("hi");
+>>>>>>> origin/master
  
 
 

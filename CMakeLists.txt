@@ -31,6 +31,7 @@ RosHelper.cpp
 set_source_files_properties(${SOURCE} PROPERTIES LANGUAGE CXX )
 
 
+<<<<<<< HEAD
 
 set(EXT_LIBS
 ${PROJECT_SOURCE_DIR}/lib/liblua.a #can't use just relative path, coz it is later used in another program (linker)
@@ -43,6 +44,8 @@ add_library(liblua STATIC IMPORTED)
 set_target_properties(liblua PROPERTIES IMPORTED_LOCATION ${EXT_LIBS})
 target_link_libraries(${PROJECT_NAME} liblua)
 	
+=======
+>>>>>>> origin/master
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 

@@ -63,5 +63,9 @@ float movePoint(cv::Point2f &target);//Движение к точке
 void SetGripper(float delta);//команды на схват в см
 void SendInfo(const char* info); //обратная связь, в т.ч. на сервер
 
+<<<<<<< HEAD
 float get_laserscan_integral_value(const sensor_msgs::LaserScan::ConstPtr& msg );
+=======
+float get_laserscan_integral_value(std::vector<float> ranges );
+>>>>>>> origin/master
 };

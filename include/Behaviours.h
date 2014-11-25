@@ -8,7 +8,12 @@ class Behaviour {
 public:
 RosHelper* rh;
 float time;
+<<<<<<< HEAD
 
+=======
+ int pointN;
+ std::vector<cv::Point2f> path;//path of robot
+>>>>>>> origin/master
     virtual ~Behaviour() {} // destructor, use it to call destructor of the inherit classes
     virtual void Execute(float dt){}
     virtual void Init(RosHelper* rh_){rh=rh_; time=0;}
