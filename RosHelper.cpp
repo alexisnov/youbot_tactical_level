@@ -3,7 +3,7 @@
 //Created: 21.10.2014
 
 #include "includes.h"
-
+#define sign(x) ((x<0)?-1:1)
 
 
 RosHelper::RosHelper(int argc, char **argv)
@@ -15,6 +15,7 @@ topic_manipulator="/arm_1/arm_controller/position_command";
 topic_gripper="/arm_2/gripper_controller/position_command";
 topic_objects="objects";
 topic_odom = "/odom";
+topic_laser="/scan";
 
 armJointPositions.resize(5);
 gripperJointPositions.resize(2);
@@ -29,26 +30,55 @@ gripperJointPositions.resize(2);
     manipulator_publisher = n.advertise<brics_actuator::JointPositions>(topic_manipulator, 1000);
     gripper_publisher =  n.advertise<brics_actuator::JointPositions>(topic_gripper, 1000);   
     cube_found=false;
-    //Horizontal and vertical step of snake
-    double dy = 1.0;
-    double dx = 1.0;
-	//path.push_back(cv::Point2f(dx,0));
-	//path.push_back(cv::Point2f(dx,dy));
-    int periodN = 1;
-    for (int i=0;i<periodN;i++){
-      path.push_back(cv::Point2f(dx,dy*i));
-      path.push_back(cv::Point2f(dx,dy*(i+1)));
-      path.push_back(cv::Point2f(0,dy*(i+1)));
-      path.push_back(cv::Point2f(0,2*dy*(i+1)));      
-    }   
+    
+	cntLaser=cntOdom=0;
 }
+float RosHelper::movePoint(cv::Point2f &target)
+{//Движение к точке
+  float v=0.5;
+ float dx = target.x-robotX;
+ float dy = target.y-robotY;
 
+ float vx,vy,vtheta=0;
+ float dr = sqrt(pow(dx,2)+pow(dy,2));
+
+ float dtheta = angleBetween(target.x, target.y, robotX, robotY, theta);
+ 
+ if(dtheta>0.001) {
+   vx = (sqrt(pow(dr,2))>v)?sign(dr)*v:v*dr;
+ }
+ //float vy = (dy>v)?sign(dy)*v:v*dy;
+ 
+ vtheta = (sqrt(pow(dtheta,2))>0.005)?sign(dtheta)*v:v*dtheta;
+ printf("dx %f, dy %f, dr %f, dtheta %f, theta %f\r\n",dx,dy,dr,dtheta,theta);
+ printf("vx %f, dr %f\r\n",vx,dr);
+ printf("dtheta %f, vtheta %f\r\n",dtheta,vtheta);
+ if(fabs(dtheta) >0.02){
+  vx=0;
+  if (fabs(dtheta) <1){
+     vtheta = 0.5*dtheta;
+  }else {
+     vtheta = 0.5*sign(dtheta);
+  }
+ }else{
+  vtheta = 0.5*dtheta;
+  if(fabs(dr)>=0.1){ vx=v;}else {vx=v*dr;}
+ }
+ if(fabs(dy)>=0.01){ vy=v*sign(dy);}else{vy=0;}
+ SendControl(vx,0,vtheta);
+ 
+ return dr;
+
+//float t=modf(time,60);
+
+}
 void RosHelper::InitCallbacks()
 {
   ros::NodeHandle n;
     behaviour_subscriber = n.subscribe(topic_behaviour, 1000, tbc);	
     objects_subscriber = n.subscribe(topic_objects, 1000, &RosHelper::objectsDetectedCallback, this);
     odom_subscriber=n.subscribe(topic_odom, 1000, &RosHelper::odomCallback, this);
+	laser_subscriber=n.subscribe(topic_laser, 1000, &RosHelper::LaserScanCallback, this);
 }
 
 RosHelper::~RosHelper()
@@ -59,6 +89,22 @@ RosHelper::~RosHelper()
     }
     wait();
 }
+
+float RosHelper::angleBetween(float x, float y, float pt_x, float pt_y, float heading)
+{
+    float v1_x=x-pt_x;
+	float v1_y=y-pt_y;
+	float v2_x = cos(heading);
+	float v2_y = sin(heading);
+	
+	float perp_dot = v1_x*v2_y-v1_y*v2_x;
+	float dot = v1_x*v2_x+v1_y*v2_y;
+	
+	//get the signed angle
+	double vector_angle = atan2(perp_dot,dot);
+	return -1.0*vector_angle;
+}
+
 void RosHelper::odomCallback(const nav_msgs::Odometry::ConstPtr& msg)
 {
   theta=tf::getYaw(msg->pose.pose.orientation);
@@ -67,6 +113,9 @@ void RosHelper::odomCallback(const nav_msgs::Odometry::ConstPtr& msg)
   //printf("Odom recieved, pose x=%f ,y=%f, a=%f\n",robotX,robotY, theta*180/3.14);
 	
 	//msg->postion;
+	 char str[30];
+  sprintf(str, ".odom#%f;%f",  robotX, robotY);
+SendInfo(str);
 }
 
 void RosHelper::objectsDetectedCallback(const std_msgs::Float32MultiArray::ConstPtr& msg)
@@ -110,6 +159,62 @@ void RosHelper::objectsDetectedCallback(const std_msgs::Float32MultiArray::Const
     }
     
 }
+float RosHelper::get_laserscan_integral_value(const sensor_msgs::LaserScan::ConstPtr& msg)
+{
+	 float brR=0, brL=0;
+		float m=msg->ranges.size()/2.0;
+
+		int cnt=0;
+		for(int i=0;i<msg->ranges.size();i++)
+		{
+		float x=msg->ranges[i];
+		
+		if(!(msg->range_min <= msg->ranges[i] && msg->ranges[i] <= msg->range_max)) x=msg->range_max; //Inf, NaN
+		
+		float br=1/x; //brightness
+
+				if(i<=m) brR+=br;
+				if(i>=m) brL+=br;
+		cnt++;
+		}
+
+		float rot;
+
+		rot=(brR-brL)/(brR+brL+0.01);
+		
+		return rot;
+}
+void RosHelper::LaserScanCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
+{
+  cntLaser++;
+  /*
+  if(cntLaser==2){
+  std::stringstream ss;
+  ss.precision(3);
+  ss << ".l#";
+  //msg->ranges - Массив Float32 (в Vector`e)
+  for(int i=0;i<msg->ranges.size();i++){
+    ss << msg->ranges[i] << ";";
+  }
+  const std::string& tmp = ss.str();
+  const char* cstr = tmp.c_str();
+  SendInfo(tmp.c_str());
+  cntLaser=0;
+  }
+  */
+ 
+float rot=get_laserscan_integral_value(msg);
+hokuyoRanges=msg->ranges;
+ char str[20];
+  sprintf(str, ".laser_mini#%f",  rot);
+SendInfo(str);
+
+ //  SendInfo("hi");
+ 
+
+
+}
+
 void RosHelper::SendControl(float fwd, float left, float rotLeft)
 {
     geometry_msgs::Twist msg;
@@ -161,7 +266,7 @@ gripperJointPositions[1].unit = "m";
     
 }
 
-void RosHelper::SendInfo(char* info)
+void RosHelper::SendInfo(const char* info)
 {
     std_msgs::String msg;
 	std::stringstream ss;

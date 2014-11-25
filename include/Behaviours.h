@@ -8,29 +8,30 @@ class Behaviour {
 public:
 RosHelper* rh;
 float time;
- int pointN;
 
     virtual ~Behaviour() {} // destructor, use it to call destructor of the inherit classes
     virtual void Execute(float dt){}
-    virtual void Init(RosHelper* rh_){rh=rh_; time=0;pointN=0;}
+    virtual void Init(RosHelper* rh_){rh=rh_; time=0;}
 };
 
 
 //Youbot behaviour for motion towards point {x, y}, avoiding obstacles with laser scanner
 class MoveWithLaser:public Behaviour {
 public:
-HokuyoLaser* hl;
-~MoveWithLaser(){if(hl!=NULL) delete hl;}
     void Execute(float dt);
 void Init(RosHelper* rh_);
 };
 
 //Youbot behaviour for zig-zag motion
 class MoveZigZag:public Behaviour {
-
+ 
 public:  
+int pointN;
+ std::vector<cv::Point2f> path;//path of robot
+ 
     float detect_time;//Time of cube detection
     void Execute(float dt);
+	void Init(RosHelper* rh_){Behaviour::Init(rh_); pointN=0;}
 };
 
 

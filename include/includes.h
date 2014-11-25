@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <string>
 
 #include <ros/console.h>
 #include <ros/ros.h>
@@ -18,12 +19,16 @@
 #include <tf/transform_datatypes.h>
 #include <nav_msgs/Odometry.h>
 #include <opencv2/opencv.hpp>
+#include <geometry_msgs/Vector3.h>
+#include <sensor_msgs/LaserScan.h>
 
 #include "RosHelper.h"
-#include "HokuyoLaser.h"
 #include "Behaviours.h"
 
 #include "udp/Udp.h"
+#include "lua.hpp"
+#include "LuaBridge.h"
+
 
 
 #endif
